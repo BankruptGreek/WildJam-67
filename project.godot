@@ -11,15 +11,22 @@ config_version=5
 [application]
 
 config/name="Wildjam#67#2"
+run/main_scene="res://Map&Tiles/world.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[debug]
+
+settings/default_gravity_vector=Vector2(0, 1)
+settings/stretch/scale=1.0
+
 [display]
 
-window/size/viewport_width=640
-window/size/viewport_height=360
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/resizable=false
 window/stretch/mode="canvas_items"
-window/stretch/scale=3.0
+window/stretch/scale=2.0
 
 [input]
 
@@ -55,9 +62,16 @@ jump={
 2d_physics/layer_1="Move"
 2d_physics/layer_2="Player"
 2d_physics/layer_3="Enemy"
+2d_physics/layer_4="PlayerWeapon"
+2d_physics/layer_5="EnemyWeapon"
+
+[physics]
+
+2d/default_gravity_vector=Vector2(0, 0)
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 2d/snap/snap_2d_transforms_to_pixel=true

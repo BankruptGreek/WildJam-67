@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3 uid="uid://bp2sldamq6511"]
+
+[ext_resource type="Texture2D" uid="uid://bfm70ci3knhva" path="res://Doctor/Doctor.png" id="1_5ixno"]
+[ext_resource type="Texture2D" uid="uid://dwn3nslake1h4" path="res://Doctor/doctorReference.png" id="2_ijo4o"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1y7de"]
+radius = 12.0
+
+[node name="Doctor" type="CharacterBody2D"]
+z_index = 10
+motion_mode = 1
+
+[node name="Feet" type="CollisionShape2D" parent="."]
+position = Vector2(0, 10)
+shape = SubResource("CircleShape2D_1y7de")
+
+[node name="Hands" type="Node2D" parent="."]
+position = Vector2(22, 0)
+
+[node name="LineDebug" type="Line2D" parent="Hands"]
+points = PackedVector2Array(-1, 0, 32, 0)
+width = 2.0
+default_color = Color(0, 0, 0, 1)
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_5ixno")
+
+[node name="SpriteDebug" type="Sprite2D" parent="."]
+texture = ExtResource("2_ijo4o")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]

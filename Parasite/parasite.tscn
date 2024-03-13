@@ -1,42 +1,85 @@
-[gd_scene load_steps=9 format=3 uid="uid://cjoqkoa2ybm70"]
+[gd_scene load_steps=10 format=3 uid="uid://cjoqkoa2ybm70"]
 
-[ext_resource type="Texture2D" uid="uid://b6fbih83yxrwn" path="res://icon.svg" id="1_h4467"]
-
-[sub_resource type="GDScript" id="GDScript_x6b4d"]
-resource_name = "parasiteChar"
-script/source = "extends CharacterBody2D
-class_name Parasite
-
-@export_group(\"Components\")
-@export var feet:CollisionShape2D
-@export var spri:Sprite2D
-@export var anim:AnimationPlayer
-
-@export_group(\"Parasite\")
-@export var parasiteOrbitSize:int = 16
-
-@export_group(\"Movement\")
-@export var maxSpeed:float=200
-
-"
+[ext_resource type="Texture2D" uid="uid://y4yxcv10u3qs" path="res://Parasite/ParasiteReference.png" id="1_476a4"]
+[ext_resource type="Script" path="res://Parasite/parasite.gd" id="1_rejf0"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_7g7m8"]
-radius = 16.0
+radius = 7.0
 
 [sub_resource type="GDScript" id="GDScript_otfiw"]
 resource_name = "groundState"
 script/source = "extends Node
-
+@onready var p:Parasite = $\"../..\"
 
 func start():
+	p.attaching=true
+	p.camera.target=p
 	pass
 	
 func update(delta:float):
+	p.lookingDirection=-p.get_local_mouse_position().angle_to(Vector2(1,0))
+	p.spriDebug.rotation=p.lookingDirection #debug
+	
 	if(Input.is_action_just_pressed(\"jump\")):
-		pass
+		var mouseDistance=p.get_local_mouse_position().length()
+		if(mouseDistance>p.maxMousePos):
+			p.velocity=Vector2.from_angle(p.lookingDirection) * p.maxSpeed
+		elif(mouseDistance>p.minMousePos):
+			p.velocity=Vector2.from_angle(p.lookingDirection) * p.maxSpeed * mouseDistance/p.maxMousePos
+		else:
+			print(\"clickTooClose\")
+			pass #too short to jump
+			
+	#frictions
+	if(p.is_on_wall()):
+		p.velocity=p.velocity.move_toward(Vector2.ZERO,p.dec*delta*2)
+		print(\"touching Wall\")
+	else:
+		p.velocity=p.velocity.move_toward(Vector2.ZERO,p.dec*delta)
+	
+	
+	
 	pass
 	
 func stop():
+	p.attaching=false
+	pass
+"
+
+[sub_resource type="GDScript" id="GDScript_yvcmv"]
+resource_name = "attachedState"
+script/source = "extends Node
+@onready var p:Parasite = $\"../..\"
+
+func start(body:CharacterBody2D):
+	p.controlledBody=body
+	p.camera.target=body
+	p.set_collision_layer_value(1,false)
+	p.set_collision_mask_value(1,false)
+	pass
+	
+func update():
+	p.lookingDirection=p.get_local_mouse_position().angle_to(Vector2(1,0))
+	p.spriDebug.rotation=p.lookingDirection #debug
+	if(Input.is_action_just_pressed(\"jump\")):
+		var mouseDistance=p.get_local_mouse_position().length()
+		if(mouseDistance>p.maxMousePos):
+			p.velocity=Vector2.from_angle(p.lookingDirection) * p.maxSpeed
+		elif(mouseDistance>p.minMousePos):
+			p.velocity=Vector2.from_angle(p.lookingDirection) * p.maxSpeed * mouseDistance/p.maxMousePos
+		else:
+			print(\"clickTooClose\")
+			pass #too short to jump
+	pass
+	
+func stop():
+	p.controlledBody.detach()
+	p.ignoreBody=p.controlledBbody
+	p.clearIgnoreBodyTimer.start()
+	p.controlledBody=null
+	p.camera.target=p
+	p.set_collision_layer_value(1,true)
+	p.set_collision_mask_value(1,true)
 	pass
 "
 
@@ -51,21 +94,25 @@ func getHit(damage:float):
 radius = 16.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_5pfyc"]
-radius = 67.1193
+radius = 34.7131
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0hstl"]
 radius = 500.0
 
 [node name="Parasite" type="CharacterBody2D"]
-script = SubResource("GDScript_x6b4d")
+z_index = 10
+motion_mode = 1
+script = ExtResource("1_rejf0")
+maxMousePos = 120.0
 
 [node name="FeetCollision" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_7g7m8")
 
 [node name="Sprite" type="Sprite2D" parent="."]
+
+[node name="SpriteDebug" type="Sprite2D" parent="."]
 self_modulate = Color(0, 0.776471, 0.180392, 1)
-scale = Vector2(0.25, 0.25)
-texture = ExtResource("1_h4467")
+texture = ExtResource("1_476a4")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 
@@ -75,6 +122,7 @@ texture = ExtResource("1_h4467")
 script = SubResource("GDScript_otfiw")
 
 [node name="Attached" type="Node" parent="States"]
+script = SubResource("GDScript_yvcmv")
 
 [node name="HitBox" type="Area2D" parent="."]
 collision_layer = 2
@@ -87,25 +135,28 @@ visible = false
 shape = SubResource("CircleShape2D_2l68w")
 
 [node name="AttachRange" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 4
 monitorable = false
 
 [node name="collider" type="CollisionShape2D" parent="AttachRange"]
-visible = false
 shape = SubResource("CircleShape2D_5pfyc")
 
 [node name="AgroRange" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 4
 monitorable = false
 
 [node name="collider" type="CollisionShape2D" parent="AgroRange"]
-visible = false
 shape = SubResource("CircleShape2D_0hstl")
 
 [node name="Health" type="Node2D" parent="."]
 
-[node name="Movement" type="Node" parent="."]
+[node name="clearIgnoreBody" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
 
-[node name="Jump" type="Node" parent="Movement"]
+[connection signal="body_entered" from="AttachRange" to="." method="attach_to"]
+[connection signal="timeout" from="clearIgnoreBody" to="." method="clearIgnoreBody"]

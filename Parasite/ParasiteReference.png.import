@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cn33og34ossyu"
-path="res://.godot/imported/finall doctor 3.png-a08d64c77f405db40775dfcd9016b101.ctex"
+uid="uid://y4yxcv10u3qs"
+path="res://.godot/imported/ParasiteReference.png-06839f159a6750f3846e59c5d53f5cf1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Researcher/finall doctor 3.png"
-dest_files=["res://.godot/imported/finall doctor 3.png-a08d64c77f405db40775dfcd9016b101.ctex"]
+source_file="res://Parasite/ParasiteReference.png"
+dest_files=["res://.godot/imported/ParasiteReference.png-06839f159a6750f3846e59c5d53f5cf1.ctex"]
 
 [params]
 
