@@ -1,31 +1,144 @@
-[gd_scene load_steps=4 format=3 uid="uid://bp2sldamq6511"]
+[gd_scene load_steps=10 format=3 uid="uid://bp2sldamq6511"]
 
-[ext_resource type="Texture2D" uid="uid://bfm70ci3knhva" path="res://Doctor/Doctor.png" id="1_5ixno"]
+[ext_resource type="Script" path="res://Doctor/Doctor.gd" id="1_7spot"]
+[ext_resource type="Texture2D" uid="uid://d3xoj8c2hegky" path="res://Doctor/DoctorTopRight.tres" id="2_8u20p"]
 [ext_resource type="Texture2D" uid="uid://dwn3nslake1h4" path="res://Doctor/doctorReference.png" id="2_ijo4o"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1y7de"]
 radius = 12.0
 
+[sub_resource type="GDScript" id="GDScript_51wnl"]
+resource_name = "hands"
+script/source = "extends Node2D
+@onready var doctor:Doctor = $\"..\"
+
+
+func _process(delta):
+	rotation=doctor.lookingDirection
+"
+
+[sub_resource type="GDScript" id="GDScript_p1dh3"]
+resource_name = "idleState"
+script/source = "extends Node
+@onready var d:Doctor = $\"../..\"
+
+
+func start():
+	pass
+	
+	
+func update(delta:float):
+	pass
+	
+func stop():
+	pass
+"
+
+[sub_resource type="GDScript" id="GDScript_r1q3r"]
+resource_name = "chaseState"
+script/source = "extends Node
+@onready var d:Doctor = $\"../..\"
+
+
+func start():
+	pass
+	
+	
+func update(delta:float):
+	pass
+	
+func stop():
+	pass
+"
+
+[sub_resource type="GDScript" id="GDScript_w6ajj"]
+resource_name = "controlledState"
+script/source = "extends Node
+@onready var d:Doctor = $\"../..\"
+
+
+func start():
+	pass
+	
+	
+func update(delta:float):
+	updateDirection()
+	var direction = Vector2(Input.get_axis(\"left\", \"right\"),Input.get_axis(\"up\", \"down\"))
+	d.velocity=lerp(d.velocity,direction*200,0.3)
+	pass
+	
+func stop():
+	pass
+
+var mousePos
+func updateDirection():
+	if(d.weapon!=null):
+		d.lookingDirection=d.weapon.rotation
+	else:
+		mousePos = d.rotation_point.get_local_mouse_position()
+		if(mousePos.length()>20):
+			d.lookingDirection=-d.rotation_point.get_local_mouse_position().angle_to(Vector2(1,0))
+			d.spriDebug.rotation=d.lookingDirection #debug
+		else:
+			d.lookingDirection=lerp(d.lookingDirection,-d.rotation_point.get_local_mouse_position().angle_to(Vector2(1,0)),0.2)
+			d.spriDebug.rotation=lerp(d.spriDebug.rotation,d.lookingDirection,0.2) #debug
+			
+			
+	
+"
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_43oag"]
+radius = 18.0
+height = 50.0
+
 [node name="Doctor" type="CharacterBody2D"]
 z_index = 10
 motion_mode = 1
+script = ExtResource("1_7spot")
 
 [node name="Feet" type="CollisionShape2D" parent="."]
-position = Vector2(0, 10)
 shape = SubResource("CircleShape2D_1y7de")
 
+[node name="RotationPoint" type="Node2D" parent="."]
+position = Vector2(0, -10)
+
 [node name="Hands" type="Node2D" parent="."]
-position = Vector2(22, 0)
+position = Vector2(0, -10)
+script = SubResource("GDScript_51wnl")
 
 [node name="LineDebug" type="Line2D" parent="Hands"]
+visible = false
+position = Vector2(23, 0)
 points = PackedVector2Array(-1, 0, 32, 0)
 width = 2.0
 default_color = Color(0, 0, 0, 1)
 
 [node name="Sprite" type="Sprite2D" parent="."]
-texture = ExtResource("1_5ixno")
+position = Vector2(0, -10)
+texture = ExtResource("2_8u20p")
 
 [node name="SpriteDebug" type="Sprite2D" parent="."]
+visible = false
 texture = ExtResource("2_ijo4o")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="States" type="Node" parent="."]
+
+[node name="Idle" type="Node" parent="States"]
+script = SubResource("GDScript_p1dh3")
+
+[node name="Chase" type="Node" parent="States"]
+script = SubResource("GDScript_r1q3r")
+
+[node name="Controlled" type="Node" parent="States"]
+script = SubResource("GDScript_w6ajj")
+
+[node name="HitBox" type="Area2D" parent="."]
+position = Vector2(0, -10)
+collision_layer = 4
+collision_mask = 0
+
+[node name="Body" type="CollisionShape2D" parent="HitBox"]
+position = Vector2(0, -1)
+shape = SubResource("CapsuleShape2D_43oag")

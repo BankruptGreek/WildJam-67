@@ -33,7 +33,7 @@ func update(delta:float):
 	#frictions
 	if(p.is_on_wall()):
 		p.velocity=p.velocity.move_toward(Vector2.ZERO,p.dec*delta*2)
-		print(\"touching Wall\")
+		#print(\"touching Wall\")
 	else:
 		p.velocity=p.velocity.move_toward(Vector2.ZERO,p.dec*delta)
 	
@@ -52,29 +52,35 @@ script/source = "extends Node
 @onready var p:Parasite = $\"../..\"
 
 func start(body:CharacterBody2D):
+	p.velocity=Vector2.ZERO
 	p.controlledBody=body
 	p.camera.target=body
 	p.set_collision_layer_value(1,false)
 	p.set_collision_mask_value(1,false)
 	pass
 	
-func update():
-	p.lookingDirection=p.get_local_mouse_position().angle_to(Vector2(1,0))
+var mousePos:Vector2
+func update(delta:float):
+	
+	
+	
+	var mousePos=-Vector2.from_angle(p.controlledBody.lookingDirection).normalized()*p.orbitSize
+	p.global_position=p.controlledBody.rotation_point.global_position + mousePos
+	p.lookingDirection=p.global_position.angle_to_point(p.controlledBody.rotation_point.global_position)
 	p.spriDebug.rotation=p.lookingDirection #debug
+	if(p.lookingDirection>0.):
+		p.z_index=10
+	else:
+		p.z_index=11
+	
 	if(Input.is_action_just_pressed(\"jump\")):
-		var mouseDistance=p.get_local_mouse_position().length()
-		if(mouseDistance>p.maxMousePos):
-			p.velocity=Vector2.from_angle(p.lookingDirection) * p.maxSpeed
-		elif(mouseDistance>p.minMousePos):
-			p.velocity=Vector2.from_angle(p.lookingDirection) * p.maxSpeed * mouseDistance/p.maxMousePos
-		else:
-			print(\"clickTooClose\")
-			pass #too short to jump
+		p.velocity=-Vector2.from_angle(p.lookingDirection) * p.maxSpeed
 	pass
 	
 func stop():
-	p.controlledBody.detach()
-	p.ignoreBody=p.controlledBbody
+	p.z_index=10
+	p.controlledBody.detached()
+	p.ignoreBody=p.controlledBody
 	p.clearIgnoreBodyTimer.start()
 	p.controlledBody=null
 	p.camera.target=p
@@ -103,12 +109,15 @@ radius = 500.0
 z_index = 10
 motion_mode = 1
 script = ExtResource("1_rejf0")
+orbitSize = 22
 maxMousePos = 120.0
+minMousePos = 20.0
 
 [node name="FeetCollision" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_7g7m8")
 
 [node name="Sprite" type="Sprite2D" parent="."]
+visible = false
 
 [node name="SpriteDebug" type="Sprite2D" parent="."]
 self_modulate = Color(0, 0.776471, 0.180392, 1)
@@ -158,5 +167,5 @@ shape = SubResource("CircleShape2D_0hstl")
 wait_time = 0.2
 one_shot = true
 
-[connection signal="body_entered" from="AttachRange" to="." method="attach_to"]
+[connection signal="area_entered" from="AttachRange" to="." method="attach_to"]
 [connection signal="timeout" from="clearIgnoreBody" to="." method="clearIgnoreBody"]

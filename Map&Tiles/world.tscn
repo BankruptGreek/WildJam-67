@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://ctt7pl1qmqmqg"]
+[gd_scene load_steps=5 format=3 uid="uid://ctt7pl1qmqmqg"]
 
 [ext_resource type="TileSet" uid="uid://cv2hpm6tpfggr" path="res://Map&Tiles/tile_set.tres" id="1_awoxh"]
 [ext_resource type="PackedScene" uid="uid://cjoqkoa2ybm70" path="res://Parasite/parasite.tscn" id="2_oyyjp"]
+[ext_resource type="PackedScene" uid="uid://bp2sldamq6511" path="res://Doctor/Doctor.tscn" id="3_52ff4"]
 
 [sub_resource type="GDScript" id="GDScript_2b5ny"]
 resource_name = "basicCamera"
@@ -31,3 +32,6 @@ script = SubResource("GDScript_2b5ny")
 [node name="Parasite" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("2_oyyjp")]
 position = Vector2(182, 128)
 camera = NodePath("../Camera")
+
+[node name="Doctor" parent="." instance=ExtResource("3_52ff4")]
+position = Vector2(256, 192)

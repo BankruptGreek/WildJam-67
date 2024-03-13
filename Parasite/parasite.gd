@@ -14,7 +14,8 @@ class_name Parasite
 
 
 @export_group("Parasite")
-@export var parasiteOrbitSize:int = 16
+@export var orbitSize:int = 16
+@export var	orbitOffset:Vector2=Vector2.ZERO
 var attaching:bool=false
 var controlledBody:CharacterBody2D
 
@@ -37,19 +38,47 @@ func _ready():
 	currentState.start()
 
 func _process(delta):
-	currentState.update(delta)
+	match currentState:
+		ground:
+			currentState.update(delta)
+			pass
+			
+		attached:
+			currentState.update(delta)
+			if(Input.is_action_just_pressed("jump")):
+				attached.stop()
+				ground.start()
+				currentState=ground
+			pass
+		_:
+			print("Parasite Invalid State \"" + str(currentState) + "\"")
+	
+	
 	
 	move_and_slide()
 
-
 var ignoreBody:Node2D=null
+
+
 func attach_to(body):
+	var temp=body
+	if(!body.is_class("Area2D")): return
+	body=body.get_parent()
+	if(body==null): return
+	print("body detected = " + str(body))
 	if(!attaching || body==ignoreBody || !body.has_method("attached")):
+		if(!attaching):
+			print("Not Attaching atm")
+		elif(body==ignoreBody):
+			print("Ignoring this one atm")
+		elif(!body.has_method("attached")):
+			print("Not suitable for me")
 		return
 	
 	if(body.attached()):
 		currentState=attached
 		attached.start(body)
+		print(str(temp))
 	
 	
 	pass # Replace with function body.
@@ -60,4 +89,7 @@ func clearIgnoreBody():
 	for body in attach_range.get_overlapping_areas():
 		attach_to(body)
 	pass # Replace with function body.
+
+
+
 
