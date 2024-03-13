@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://ctt7pl1qmqmqg"]
+
+[ext_resource type="TileSet" uid="uid://cv2hpm6tpfggr" path="res://Map&Tiles/tile_set.tres" id="1_awoxh"]
+
+[node name="World" type="Node2D"]
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = ExtResource("1_awoxh")
+format = 2
+
+[node name="Camera" type="Camera2D" parent="."]
+position_smoothing_enabled = true
+position_smoothing_speed = 10.0
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+drag_left_margin = 0.1
+drag_top_margin = 0.1
+drag_right_margin = 0.1
+drag_bottom_margin = 0.1
