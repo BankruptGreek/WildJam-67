@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Doctor/Doctor.gd" id="1_7spot"]
 [ext_resource type="Texture2D" uid="uid://dwn3nslake1h4" path="res://Doctor/doctorReference.png" id="2_ijo4o"]
 [ext_resource type="PackedScene" uid="uid://b4ntkcwvs31ir" path="res://UI/HPBar/HealthComponent.tscn" id="2_tp7vr"]
-[ext_resource type="Texture2D" uid="uid://bmohc88f0p1cr" path="res://Doctor/DoctorRIP.tres" id="3_f4v6d"]
+[ext_resource type="Texture2D" uid="uid://dafr80546ahxj" path="res://Doctor/DoctorBottomLeft.tres" id="3_phuj4"]
 [ext_resource type="Script" path="res://Doctor/AI.gd" id="5_8nqo0"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1y7de"]
@@ -118,6 +118,7 @@ script/source = "extends Node
 func start():
 	d.set_collision_layer_value(1,false)
 	d.set_collision_mask_value(1,false)
+	d.ai.free()
 	d.z_index=5
 	d.spri.texture=d.DOCTOR_RIP
 	if(d.weapon!=null):
@@ -131,7 +132,7 @@ func update(delta:float):
 	pass
 	
 	
-func stop(delta:float):
+func stop():
 	d.set_collision_layer_value(1,true)
 	d.set_collision_mask_value(1,true)
 	d.z_index=10
@@ -173,7 +174,7 @@ default_color = Color(0, 0, 0, 1)
 
 [node name="Sprite" type="Sprite2D" parent="."]
 position = Vector2(0, -10)
-texture = ExtResource("3_f4v6d")
+texture = ExtResource("3_phuj4")
 
 [node name="SpriteDebug" type="Sprite2D" parent="."]
 visible = false
@@ -209,7 +210,7 @@ one_shot = true
 
 [node name="AI" type="Node2D" parent="."]
 script = ExtResource("5_8nqo0")
-minRange = 80
+minRange = 50
 
 [node name="Timer" type="Timer" parent="AI"]
 wait_time = 0.1

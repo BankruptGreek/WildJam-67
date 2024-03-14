@@ -102,6 +102,7 @@ func hitSomething(body):
 	body=body.get_parent()
 	if(body==null):return
 	if(body.has_method("getHit")):
+		if(body.isDead): return
 		var direction:Vector2 = (body.global_position-global_position).normalized()
 		var factor:float=(abs(rSpeed)-10)/4
 		if(rSpeed<-10):

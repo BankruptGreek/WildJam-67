@@ -14,6 +14,10 @@ var step=4
 var healTemp:int=0
 
 func _ready():
+	if(parent.isDead):
+		HP=0
+		hpBar.set_value_no_signal(2)
+		return
 	heal(maxHP)
 
 func takeDamage(damage:int):
@@ -24,6 +28,7 @@ func takeDamage(damage:int):
 	hpBar.set_value_no_signal(2+HP*step)
 	
 	if(HP<=0):
+		HP=0
 		parent.die()
 		pass
 	
@@ -39,7 +44,7 @@ func heal(amount:int):
 
 
 func healTimer():
-	while(healTemp>0):
+	if(healTemp>0):
 			HP+=1
 			healTemp-=1
 			hpBar.set_value_no_signal(2+HP*step)

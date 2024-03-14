@@ -42,7 +42,10 @@ const DOCTOR_RIP = preload("res://Doctor/DoctorRIP.png")
 var currentState:Node
 
 func _ready():
-	currentState=chase
+	if(isDead):
+		currentState=not_so_dead
+	else:
+		currentState=chase
 	currentState.start()
 
 func _process(delta):
@@ -70,7 +73,7 @@ func attached(parasite:Parasite)->bool:
 		return false
 		
 	
-	if(health.HP<=health.threshold || isInfected):
+	if(health.HP<=health.threshold || isInfected || isDead):
 		currentState.stop()
 		currentState=controlled
 		currentState.start()
