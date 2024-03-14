@@ -118,7 +118,6 @@ script/source = "extends Node
 func start():
 	d.set_collision_layer_value(1,false)
 	d.set_collision_mask_value(1,false)
-	d.ai.free()
 	d.z_index=5
 	d.spri.texture=d.DOCTOR_RIP
 	if(d.weapon!=null):
@@ -139,6 +138,7 @@ func stop():
 	d.isDead=false
 	if(d.weapon!=null):
 		d.weapon.visible=true
+	d.spri.texture=d.DOCTOR_BOTTOM_LEFT
 	pass
 "
 

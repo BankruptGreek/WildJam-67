@@ -29,7 +29,9 @@ var controlledBody:CharacterBody2D
 
 #States
 @onready var ground = $States/Ground
+const PARASITE_GROUND = preload("res://Parasite/parasiteGround.png")
 @onready var attached = $States/Attached
+const PARASITE_ATTACHED = preload("res://Parasite/parasiteAttached.png")
 var currentState:Node
 
 func _ready():

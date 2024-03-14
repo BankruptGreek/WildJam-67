@@ -1,7 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://cjoqkoa2ybm70"]
+[gd_scene load_steps=11 format=3 uid="uid://cjoqkoa2ybm70"]
 
 [ext_resource type="Texture2D" uid="uid://y4yxcv10u3qs" path="res://Parasite/ParasiteReference.png" id="1_476a4"]
 [ext_resource type="Script" path="res://Parasite/parasite.gd" id="1_rejf0"]
+[ext_resource type="Texture2D" uid="uid://b0r50ht33uxk4" path="res://Parasite/parasiteGround.png" id="2_plx1b"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_7g7m8"]
 radius = 7.0
@@ -12,6 +13,7 @@ script/source = "extends Node
 @onready var p:Parasite = $\"../..\"
 
 func start():
+	p.spri.texture=p.PARASITE_GROUND
 	p.attaching=true
 	p.camera.target=p
 	pass
@@ -52,6 +54,7 @@ script/source = "extends Node
 @onready var p:Parasite = $\"../..\"
 
 func start(body:CharacterBody2D):
+	p.spri.texture=p.PARASITE_ATTACHED
 	p.velocity=Vector2.ZERO
 	p.controlledBody=body
 	p.camera.target=body
@@ -68,6 +71,7 @@ func update(delta:float):
 	p.global_position=p.controlledBody.rotation_point.global_position + mousePos
 	p.lookingDirection=p.global_position.angle_to_point(p.controlledBody.rotation_point.global_position)
 	p.spriDebug.rotation=p.lookingDirection #debug
+	p.spri.rotation=p.lookingDirection
 	if(p.lookingDirection>0.):
 		p.z_index=10
 	else:
@@ -117,9 +121,10 @@ minMousePos = 20.0
 shape = SubResource("CircleShape2D_7g7m8")
 
 [node name="Sprite" type="Sprite2D" parent="."]
-visible = false
+texture = ExtResource("2_plx1b")
 
 [node name="SpriteDebug" type="Sprite2D" parent="."]
+visible = false
 self_modulate = Color(0, 0.776471, 0.180392, 1)
 texture = ExtResource("1_476a4")
 

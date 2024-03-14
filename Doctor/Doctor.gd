@@ -50,7 +50,7 @@ func _ready():
 
 func _process(delta):
 	currentState.update(delta)
-	if(!isDead):
+	if(!isDead || currentState==not_so_dead):
 		updateSprite()
 	
 	if(weapon!=null):
@@ -110,8 +110,10 @@ func equip(weaponToEquip:Weapon)->bool:
 		return false
 	
 func getHit(dir:Vector2,pushForce:float,damage:int):
+	
+	
 	velocity+=dir*pushForce
-	stunned(damage/4)
+	stunned(damage/8)
 	health.takeDamage(damage)
 	pass
 	
@@ -120,11 +122,14 @@ var stateBeforeStun
 func stunned(duration):
 	stun_timer.wait_time=duration
 	stateBeforeStun=currentState
+	currentState.stop()
 	currentState=idle
 	stun_timer.start()
 	pass
 func unstunned():
+	currentState.stop()
 	currentState=stateBeforeStun
+	currentState.start()
 	pass
 
 func die():

@@ -3,7 +3,7 @@ class_name AI
 @onready var doctor:Doctor = $".."
 
 @export var minRange:int=100
-@export var target:Node2D
+@export var my_target:Node2D
 @onready var timer = $Timer
 @onready var nav:NavigationAgent2D = $NavigationAgent2D
 
@@ -17,7 +17,7 @@ var desiredDirection:Vector2
 func updateAIpath():
 	if(chase.running):
 		desiredDirection=Vector2.ZERO
-		nav.target_position=target.global_position
+		nav.target_position=my_target.global_position
 		desiredDirection=(nav.get_next_path_position()-global_position).normalized()
 		timer.start()
 	
@@ -25,10 +25,12 @@ func updateAIpath():
 func start(target:Node2D):
 	nav.max_speed=doctor.maxSpeed
 	nav.target_desired_distance=minRange
-	self.target=target
+	my_target=target
+	chase.running=true
 	timer.start()
-	pass
+
 func stop():
 	timer.stop()
-	
-	pass
+	my_target=self
+	chase.running=false
+
