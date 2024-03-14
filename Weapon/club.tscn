@@ -1,0 +1,41 @@
+[gd_scene load_steps=5 format=3 uid="uid://cv7533nl1nb4g"]
+
+[ext_resource type="Script" path="res://Weapon/club.gd" id="1_1p6j0"]
+[ext_resource type="Texture2D" uid="uid://djjr7p8h5qs8i" path="res://Weapon/clubGround.tres" id="2_er604"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_xuxwd"]
+radius = 29.0172
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_3ysvp"]
+radius = 3.0
+height = 42.0
+
+[node name="Club" type="Node2D"]
+z_index = 9
+script = ExtResource("1_1p6j0")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(26, 0)
+texture = ExtResource("2_er604")
+metadata/_edit_lock_ = true
+
+[node name="PickUpRange" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PickUpRange"]
+position = Vector2(37, 0)
+shape = SubResource("CircleShape2D_xuxwd")
+metadata/_edit_lock_ = true
+
+[node name="HitBox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+position = Vector2(38, 0)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_3ysvp")
+
+[connection signal="area_entered" from="PickUpRange" to="." method="equipRangeEntered"]
+[connection signal="area_entered" from="HitBox" to="." method="hitSomething"]

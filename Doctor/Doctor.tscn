@@ -1,8 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://bp2sldamq6511"]
+[gd_scene load_steps=13 format=3 uid="uid://bp2sldamq6511"]
 
 [ext_resource type="Script" path="res://Doctor/Doctor.gd" id="1_7spot"]
-[ext_resource type="Texture2D" uid="uid://d3xoj8c2hegky" path="res://Doctor/DoctorTopRight.tres" id="2_8u20p"]
 [ext_resource type="Texture2D" uid="uid://dwn3nslake1h4" path="res://Doctor/doctorReference.png" id="2_ijo4o"]
+[ext_resource type="PackedScene" uid="uid://b4ntkcwvs31ir" path="res://UI/HPBar/HealthComponent.tscn" id="2_tp7vr"]
+[ext_resource type="Texture2D" uid="uid://bmohc88f0p1cr" path="res://Doctor/DoctorRIP.tres" id="3_f4v6d"]
+[ext_resource type="Script" path="res://Doctor/AI.gd" id="5_8nqo0"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1y7de"]
 radius = 12.0
@@ -28,6 +30,7 @@ func start():
 	
 	
 func update(delta:float):
+	d.velocity=lerp(d.velocity,Vector2.ZERO,0.3)
 	pass
 	
 func stop():
@@ -39,16 +42,32 @@ resource_name = "chaseState"
 script/source = "extends Node
 @onready var d:Doctor = $\"../..\"
 
+var running:bool
 
 func start():
+	running=true
+	d.ai.start(d.target)
 	pass
 	
 	
 func update(delta:float):
+	d.ai.nav.set_velocity(lerp(d.velocity,d.ai.desiredDirection*d.maxSpeed,0.1))
+	if(d.global_position.distance_to(d.target.global_position)<d.ai.minRange):
+		d.velocity=lerp(d.velocity,d.global_position.direction_to(d.target.global_position).orthogonal().normalized()*d.maxSpeed,0.4)
+		pass
 	pass
 	
 func stop():
+	running=false
+	d.ai.stop()
+	d.ai.nav.avoidance_enabled=false
 	pass
+
+
+func velocityComputed(safe_velocity):
+	if(running):
+		d.velocity=safe_velocity
+	pass # Replace with function body.
 "
 
 [sub_resource type="GDScript" id="GDScript_w6ajj"]
@@ -58,13 +77,16 @@ script/source = "extends Node
 
 
 func start():
+	if(!d.isInfected):
+		d.isInfected=true
+		d.health.heal(d.health.maxHP)
 	pass
 	
 	
 func update(delta:float):
 	updateDirection()
 	var direction = Vector2(Input.get_axis(\"left\", \"right\"),Input.get_axis(\"up\", \"down\"))
-	d.velocity=lerp(d.velocity,direction*200,0.3)
+	d.velocity=lerp(d.velocity,direction*d.maxSpeed,0.20)
 	pass
 	
 func stop():
@@ -84,7 +106,39 @@ func updateDirection():
 			d.spriDebug.rotation=lerp(d.spriDebug.rotation,d.lookingDirection,0.2) #debug
 			
 			
+
+"
+
+[sub_resource type="GDScript" id="GDScript_bdqnq"]
+resource_name = "NotSoDeadState"
+script/source = "extends Node
+@onready var d:Doctor = $\"../..\"
+
+
+func start():
+	d.set_collision_layer_value(1,false)
+	d.set_collision_mask_value(1,false)
+	d.z_index=5
+	d.spri.texture=d.DOCTOR_RIP
+	if(d.weapon!=null):
+		d.weapon.visible=false
+	d.isDead=true
+	d.velocity=Vector2.ZERO
+	pass
 	
+func update(delta:float):
+	d.velocity=lerp(d.velocity,Vector2.ZERO,0.5)
+	pass
+	
+	
+func stop(delta:float):
+	d.set_collision_layer_value(1,true)
+	d.set_collision_mask_value(1,true)
+	d.z_index=10
+	d.isDead=false
+	if(d.weapon!=null):
+		d.weapon.visible=true
+	pass
 "
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_43oag"]
@@ -95,6 +149,10 @@ height = 50.0
 z_index = 10
 motion_mode = 1
 script = ExtResource("1_7spot")
+
+[node name="HealthComponent" parent="." instance=ExtResource("2_tp7vr")]
+offset_top = -56.0
+offset_bottom = -56.0
 
 [node name="Feet" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_1y7de")
@@ -115,7 +173,7 @@ default_color = Color(0, 0, 0, 1)
 
 [node name="Sprite" type="Sprite2D" parent="."]
 position = Vector2(0, -10)
-texture = ExtResource("2_8u20p")
+texture = ExtResource("3_f4v6d")
 
 [node name="SpriteDebug" type="Sprite2D" parent="."]
 visible = false
@@ -134,6 +192,9 @@ script = SubResource("GDScript_r1q3r")
 [node name="Controlled" type="Node" parent="States"]
 script = SubResource("GDScript_w6ajj")
 
+[node name="NotSoDead" type="Node" parent="States"]
+script = SubResource("GDScript_bdqnq")
+
 [node name="HitBox" type="Area2D" parent="."]
 position = Vector2(0, -10)
 collision_layer = 4
@@ -142,3 +203,27 @@ collision_mask = 0
 [node name="Body" type="CollisionShape2D" parent="HitBox"]
 position = Vector2(0, -1)
 shape = SubResource("CapsuleShape2D_43oag")
+
+[node name="StunTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="AI" type="Node2D" parent="."]
+script = ExtResource("5_8nqo0")
+minRange = 80
+
+[node name="Timer" type="Timer" parent="AI"]
+wait_time = 0.1
+one_shot = true
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="AI"]
+path_max_distance = 200.0
+avoidance_enabled = true
+radius = 60.0
+max_neighbors = 5
+time_horizon_agents = 0.5
+avoidance_layers = 7
+avoidance_mask = 7
+
+[connection signal="timeout" from="StunTimer" to="." method="unstunned"]
+[connection signal="timeout" from="AI/Timer" to="AI" method="updateAIpath"]
+[connection signal="velocity_computed" from="AI/NavigationAgent2D" to="States/Chase" method="velocityComputed"]

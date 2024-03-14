@@ -75,7 +75,8 @@ func attach_to(body):
 			print("Not suitable for me")
 		return
 	
-	if(body.attached()):
+	if(body.attached(self)):
+		currentState.stop()
 		currentState=attached
 		attached.start(body)
 		print(str(temp))
