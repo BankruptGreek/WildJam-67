@@ -22,6 +22,7 @@ const DOCTOR_RIP = preload("res://Doctor/DoctorRIP.png")
 @export var target:Node2D
 @export var isInfected:bool=false
 @export var isDead:bool=false
+@export var isStunned:bool=false
 
 
 @export_group("Movement")
@@ -50,7 +51,7 @@ func _ready():
 
 func _process(delta):
 	currentState.update(delta)
-	if(!isDead || currentState==not_so_dead):
+	if(!isDead || !currentState==not_so_dead):
 		updateSprite()
 	
 	if(weapon!=null):
@@ -113,23 +114,37 @@ func getHit(dir:Vector2,pushForce:float,damage:int):
 	
 	
 	velocity+=dir*pushForce
-	stunned(damage/8)
+	stunned(damage/4)
 	health.takeDamage(damage)
 	pass
 	
 	
 var stateBeforeStun
 func stunned(duration):
-	stun_timer.wait_time=duration
-	stateBeforeStun=currentState
-	currentState.stop()
-	currentState=idle
-	stun_timer.start()
+	if(isStunned==false):
+		if(weapon!=null):
+			weapon.rSpeed=0
+		isStunned=true
+		stun_timer.wait_time=duration
+		stateBeforeStun=currentState
+		currentState.stop()
+		currentState=idle
+		currentState.start()
+		stun_timer.start()
+		
+		print(duration)
+		modulate = Color.DARK_RED
+		var tween = get_tree().create_tween()
+		tween.tween_property(self,"modulate",Color.WHITE,duration*0.5).set_delay(duration*0.5)
+		tween.set_ease(Tween.EASE_IN)
 	pass
 func unstunned():
-	currentState.stop()
-	currentState=stateBeforeStun
-	currentState.start()
+	isStunned=false
+	
+	if(currentState==idle && !isDead):
+		currentState.stop()
+		currentState=stateBeforeStun
+		currentState.start()
 	pass
 
 func die():

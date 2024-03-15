@@ -26,7 +26,7 @@ func _ready():
 	pass
 
 func update(delta:float):
-	if(mouseControlled): rotateWeapon(delta)
+	rotateWeapon(delta)
 	if(rotation>0):z_index=11
 	else:z_index=9
 	#print(rSpeed)
@@ -34,32 +34,39 @@ func update(delta:float):
 	pass
 	
 func rotateWeapon(delta:float):
-	if(holder.get_local_mouse_position().length()>20):
-		var rotationalDifference=-get_local_mouse_position().angle_to(Vector2(1,0))
-		if(abs(rotationalDifference)<=0.1):
-			rSpeed=move_toward(rSpeed,0,acc*delta*4)
-		else:	
-			if(rSpeed>=0.):
-				if(rotationalDifference>0. || (rSpeed>3*maxSpeed/4 &&rotationalDifference>-1.8)):
-					if(rSpeed<maxSpeed/2):
-						rSpeed=move_toward(rSpeed,maxSpeed,acc*delta*2)
-					else:
-						rSpeed=move_toward(rSpeed,maxSpeed,acc*delta)
+	if(mouseControlled && holder.get_local_mouse_position().length()<20):
+		return
+		
+	var rotationalDifference	
+	if(mouseControlled):
+		rotationalDifference=-get_local_mouse_position().angle_to(Vector2(1,0))
+	else:
+		rotationalDifference=holder.hands.rotation-rotation
+	
+	if(abs(rotationalDifference)<=0.1):
+		rSpeed=move_toward(rSpeed,0,acc*delta*4)
+	else:	
+		if(rSpeed>=0.):
+			if(rotationalDifference>0. || (rSpeed>3*maxSpeed/4 &&rotationalDifference>-1.6 && mouseControlled)):
+				if(rSpeed<maxSpeed/2):
+					rSpeed=move_toward(rSpeed,maxSpeed,acc*delta*2)
 				else:
-					rSpeed=move_toward(rSpeed,-maxSpeed,acc*delta*4)
+					rSpeed=move_toward(rSpeed,maxSpeed,acc*delta)
 			else:
-				if(rotationalDifference<0. || (rSpeed<-3*maxSpeed/4 && rotationalDifference<1.8)):
-					if(rSpeed>-maxSpeed/2):
-						rSpeed=move_toward(rSpeed,-maxSpeed,acc*delta*2)
-					else:
-						rSpeed=move_toward(rSpeed,-maxSpeed,acc*delta)
+				rSpeed=move_toward(rSpeed,-maxSpeed,acc*delta*4)
+		else:
+			if(rotationalDifference<0. || (rSpeed<-3*maxSpeed/4 && rotationalDifference<1.6 && mouseControlled)):
+				if(rSpeed>-maxSpeed/2):
+					rSpeed=move_toward(rSpeed,-maxSpeed,acc*delta*2)
 				else:
-					rSpeed=move_toward(rSpeed,maxSpeed,acc*delta*4)
-		rotation+=rSpeed*delta
-		if(rotation>3.14):
-			rotation-=6.26
-		elif(rotation<-3.14):
-			rotation+=6.28
+					rSpeed=move_toward(rSpeed,-maxSpeed,acc*delta)
+			else:
+				rSpeed=move_toward(rSpeed,maxSpeed,acc*delta*4)
+	rotation+=rSpeed*delta
+	if(rotation>3.14):
+		rotation-=6.26
+	elif(rotation<-3.14):
+		rotation+=6.28
 	
 func pickUp(holderOfWeapon:Node2D):
 	spri.texture=CLUB

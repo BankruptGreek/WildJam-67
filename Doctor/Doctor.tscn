@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bp2sldamq6511"]
+[gd_scene load_steps=14 format=3 uid="uid://bp2sldamq6511"]
 
 [ext_resource type="Script" path="res://Doctor/Doctor.gd" id="1_7spot"]
 [ext_resource type="Texture2D" uid="uid://dwn3nslake1h4" path="res://Doctor/doctorReference.png" id="2_ijo4o"]
@@ -47,11 +47,15 @@ var running:bool
 func start():
 	running=true
 	d.ai.start(d.target)
+	d.ai.nav.avoidance_enabled=true
+	if(d.weapon!=null):
+		d.weapon.acc=d.weapon.acc/2
+		d.weapon.maxSpeed=d.weapon.maxSpeed/2
 	pass
 	
 	
 func update(delta:float):
-	d.ai.nav.set_velocity(lerp(d.velocity,d.ai.desiredDirection*d.maxSpeed,0.1))
+	d.ai.nav.set_velocity(lerp(d.velocity,d.ai.desiredDirection*d.maxSpeed,0.05))
 	if(d.global_position.distance_to(d.target.global_position)<d.ai.minRange):
 		d.velocity=lerp(d.velocity,d.global_position.direction_to(d.target.global_position).orthogonal().normalized()*d.maxSpeed,0.4)
 		pass
@@ -61,12 +65,17 @@ func stop():
 	running=false
 	d.ai.stop()
 	d.ai.nav.avoidance_enabled=false
+	if(d.weapon!=null):
+		d.weapon.acc=d.weapon.acc*2
+		d.weapon.maxSpeed=d.weapon.maxSpeed*2
 	pass
 
 
 func velocityComputed(safe_velocity):
 	if(running):
 		d.velocity=safe_velocity
+		d.lookingDirection=d.velocity.angle()
+		d.ai.updateAIpath()
 	pass # Replace with function body.
 "
 
@@ -142,6 +151,11 @@ func stop():
 	pass
 "
 
+[sub_resource type="GDScript" id="GDScript_8truy"]
+resource_name = "AttackState"
+script/source = "extends Node
+"
+
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_43oag"]
 radius = 18.0
 height = 50.0
@@ -196,6 +210,9 @@ script = SubResource("GDScript_w6ajj")
 [node name="NotSoDead" type="Node" parent="States"]
 script = SubResource("GDScript_bdqnq")
 
+[node name="Attack" type="Node" parent="States"]
+script = SubResource("GDScript_8truy")
+
 [node name="HitBox" type="Area2D" parent="."]
 position = Vector2(0, -10)
 collision_layer = 4
@@ -212,19 +229,14 @@ one_shot = true
 script = ExtResource("5_8nqo0")
 minRange = 50
 
-[node name="Timer" type="Timer" parent="AI"]
-wait_time = 0.1
-one_shot = true
-
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="AI"]
 path_max_distance = 200.0
 avoidance_enabled = true
-radius = 60.0
+radius = 30.0
 max_neighbors = 5
 time_horizon_agents = 0.5
 avoidance_layers = 7
 avoidance_mask = 7
 
 [connection signal="timeout" from="StunTimer" to="." method="unstunned"]
-[connection signal="timeout" from="AI/Timer" to="AI" method="updateAIpath"]
 [connection signal="velocity_computed" from="AI/NavigationAgent2D" to="States/Chase" method="velocityComputed"]

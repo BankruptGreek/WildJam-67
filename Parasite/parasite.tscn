@@ -21,6 +21,7 @@ func start():
 func update(delta:float):
 	p.lookingDirection=-p.get_local_mouse_position().angle_to(Vector2(1,0))
 	p.spriDebug.rotation=p.lookingDirection #debug
+	p.spri.rotation=p.lookingDirection + 3.14
 	
 	if(Input.is_action_just_pressed(\"jump\")):
 		var mouseDistance=p.get_local_mouse_position().length()
@@ -31,6 +32,8 @@ func update(delta:float):
 		else:
 			print(\"clickTooClose\")
 			pass #too short to jump
+			
+		
 			
 	#frictions
 	if(p.is_on_wall()):
