@@ -1,4 +1,6 @@
-[gd_resource type="CompressedTexture2D" format=3 uid="uid://djjr7p8h5qs8i"]
+[gd_resource type="CanvasTexture" load_steps=2 format=3 uid="uid://k8dx5skl3biq"]
+
+[ext_resource type="Texture2D" uid="uid://cpx3sqb4oaknx" path="res://Weapon/pipeGround.png" id="1_8sctl"]
 
 [resource]
-load_path = "res://.godot/imported/BatGround.png-9fa41903c79e9a7a0aa1b4216d5637ae.ctex"
+diffuse_texture = ExtResource("1_8sctl")

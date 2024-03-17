@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://c5g0qhlsy24bq"]
+
+[ext_resource type="PackedScene" uid="uid://bp2sldamq6511" path="res://Doctor/Doctor.tscn" id="1_8hotj"]
+[ext_resource type="PackedScene" uid="uid://cv7533nl1nb4g" path="res://Weapon/club.tscn" id="2_7vr3u"]
+
+[node name="DoctorCorpse" type="Node2D"]
+
+[node name="Doctor" parent="." instance=ExtResource("1_8hotj")]
+isDead = true
+isAttacking = false
+
+[node name="Club" parent="." instance=ExtResource("2_7vr3u")]
+visible = false

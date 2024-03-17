@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://bq77vyjfni7ar"]
+
+[ext_resource type="PackedScene" uid="uid://bp2sldamq6511" path="res://Doctor/Doctor.tscn" id="1_4rm4t"]
+[ext_resource type="PackedScene" uid="uid://cv7533nl1nb4g" path="res://Weapon/club.tscn" id="2_w2p60"]
+
+[node name="DoctorReady" type="Node2D"]
+
+[node name="Doctor" parent="." node_paths=PackedStringArray("weapon") instance=ExtResource("1_4rm4t")]
+weapon = NodePath("../Club")
+isAttacking = false
+
+[node name="Club" parent="." node_paths=PackedStringArray("holder") instance=ExtResource("2_w2p60")]
+holder = NodePath("../Doctor")

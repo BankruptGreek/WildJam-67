@@ -1,23 +1,237 @@
-[gd_scene load_steps=14 format=3 uid="uid://bp2sldamq6511"]
+[gd_scene load_steps=24 format=3 uid="uid://bp2sldamq6511"]
 
 [ext_resource type="Script" path="res://Doctor/Doctor.gd" id="1_7spot"]
 [ext_resource type="Texture2D" uid="uid://dwn3nslake1h4" path="res://Doctor/doctorReference.png" id="2_ijo4o"]
-[ext_resource type="PackedScene" uid="uid://b4ntkcwvs31ir" path="res://UI/HPBar/HealthComponent.tscn" id="2_tp7vr"]
-[ext_resource type="Texture2D" uid="uid://dafr80546ahxj" path="res://Doctor/DoctorBottomLeft.tres" id="3_phuj4"]
+[ext_resource type="Texture2D" uid="uid://36hfv1f43b5" path="res://Doctor/Doctor.png" id="3_btgxa"]
+[ext_resource type="Script" path="res://UI/HPBar/HealthComponent.gd" id="5_1r6du"]
 [ext_resource type="Script" path="res://Doctor/AI.gd" id="5_8nqo0"]
+[ext_resource type="Texture2D" uid="uid://b1ju1dosfx3pn" path="res://UI/HPBar/hpFrame.png" id="5_vqh76"]
+[ext_resource type="Texture2D" uid="uid://bldefb1i70oag" path="res://UI/HPBar/hpBar15.png" id="6_f607k"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1y7de"]
 radius = 12.0
 
-[sub_resource type="GDScript" id="GDScript_51wnl"]
-resource_name = "hands"
-script/source = "extends Node2D
-@onready var doctor:Doctor = $\"..\"
+[sub_resource type="Animation" id="Animation_4en2a"]
+length = 0.001
+loop_mode = 2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = false
+tracks/0/path = NodePath("RelativePos:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = false
+tracks/1/path = NodePath("RelativePos/Hands:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = false
+tracks/2/path = NodePath("RelativePos/NotRelativeRotation:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = false
+tracks/3/path = NodePath("RelativePos/Hands:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -10)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".:h")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_qxyse"]
+resource_name = "attack"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:isAttacking")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(1),
+"transitions": PackedFloat32Array(0.001011),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = false
+tracks/1/path = NodePath("RelativePos:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5, 0.6, 0.7, 1),
+"transitions": PackedFloat32Array(1, 0.707107, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(-24, 0), Vector2(-24, 0), Vector2(35, 0), Vector2(35, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("RelativePos/Hands:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5, 0.6, 0.7, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 0.482968, 1),
+"update": 0,
+"values": [1.45037, 2.49757, 2.49757, -2.59007, -11.116]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = false
+tracks/3/path = NodePath("RelativePos/NotRelativeRotation:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.5, 0.6, 0.7, 1),
+"transitions": PackedFloat32Array(0.267944, 1, 2.2974, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(-24, 0), Vector2(-24, 0), Vector2(35, 0), Vector2(35, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = false
+tracks/4/path = NodePath("RelativePos/Hands:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.5, 0.6, 0.7, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(-24, 0), Vector2(-24, 0), Vector2(35, 0), Vector2(35, 0)]
+}
+tracks/5/type = "method"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath(".")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.648572, 1),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [],
+"method": &"weaponEnable"
+}, {
+"args": [],
+"method": &"weaponDisable"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_j3emr"]
+resource_name = "attack_flipped"
+length = 1.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:isAttacking")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(1.2),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("RelativePos:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5, 0.6, 0.7, 1, 1.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(-24, 0), Vector2(-24, 0), Vector2(35, 0), Vector2(35, 0), Vector2(0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("RelativePos/Hands:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5, 0.6, 0.7, 1.19861),
+"transitions": PackedFloat32Array(1, 1, 1, 0.482968, 1),
+"update": 0,
+"values": [1.45037, 2.49757, 2.49757, -2.59007, -11.116]
+}
+
+[sub_resource type="Animation" id="Animation_l2xqj"]
+resource_name = "moving"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:h")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 1]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_18utq"]
+_data = {
+"RESET": SubResource("Animation_4en2a"),
+"attack": SubResource("Animation_qxyse"),
+"attack_flipped": SubResource("Animation_j3emr"),
+"moving": SubResource("Animation_l2xqj")
+}
+
+[sub_resource type="GDScript" id="GDScript_w5wfg"]
+resource_name = "will hit"
+script/source = "extends Area2D
 
 
-func _process(delta):
-	rotation=doctor.lookingDirection
+
+func _on_area_entered(area):
+	get_parent().isAttacking=true
 "
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6gewq"]
+radius = 45.3982
 
 [sub_resource type="GDScript" id="GDScript_p1dh3"]
 resource_name = "idleState"
@@ -37,20 +251,43 @@ func stop():
 	pass
 "
 
+[sub_resource type="GDScript" id="GDScript_776x7"]
+resource_name = "stunned"
+script/source = "extends Node
+
+@onready var d:Doctor = $\"../..\"
+
+
+func start():
+	pass
+	
+	
+func update(delta:float):
+	d.velocity=lerp(d.velocity,Vector2.ZERO,0.1)
+	if(!d.isStunned):
+		print(\"Stunned but not stunned\")
+		d.unstunned()
+		d.currentState==d.determineState()
+		stop()
+		d.currentState.start()
+	pass
+	
+func stop():
+	pass
+"
+
 [sub_resource type="GDScript" id="GDScript_r1q3r"]
 resource_name = "chaseState"
 script/source = "extends Node
 @onready var d:Doctor = $\"../..\"
 
-var running:bool
+
 
 func start():
-	running=true
 	d.ai.start(d.target)
 	d.ai.nav.avoidance_enabled=true
 	if(d.weapon!=null):
-		d.weapon.acc=d.weapon.acc/2
-		d.weapon.maxSpeed=d.weapon.maxSpeed/2
+		d.weapon.maxSpeed=d.weapon.maxSpeed/4
 	pass
 	
 	
@@ -62,17 +299,15 @@ func update(delta:float):
 	pass
 	
 func stop():
-	running=false
 	d.ai.stop()
 	d.ai.nav.avoidance_enabled=false
 	if(d.weapon!=null):
-		d.weapon.acc=d.weapon.acc*2
-		d.weapon.maxSpeed=d.weapon.maxSpeed*2
+		d.weapon.maxSpeed=d.weapon.maxSpeed*4
 	pass
 
 
 func velocityComputed(safe_velocity):
-	if(running):
+	if(d.isChasing):
 		d.velocity=safe_velocity
 		d.lookingDirection=d.velocity.angle()
 		d.ai.updateAIpath()
@@ -89,6 +324,18 @@ func start():
 	if(!d.isInfected):
 		d.isInfected=true
 		d.health.heal(d.health.maxHP)
+	d.isControlled=true
+	if(d.weapon!=null):
+		d.weapon.setForPlayer()
+		
+	d.hit_box.set_collision_layer_value(2,true)
+	d.hit_box.set_collision_layer_value(3,false)
+	
+	d.relative_pos.rotation=0
+	d.not_relative_rotation.rotation=0
+	d.relative_pos.position=Vector2.ZERO
+	d.not_relative_rotation.position=Vector2.ZERO
+	d.hands.position=Vector2.ZERO
 	pass
 	
 	
@@ -99,6 +346,7 @@ func update(delta:float):
 	pass
 	
 func stop():
+	d.isControlled=false
 	pass
 
 var mousePos
@@ -123,17 +371,27 @@ resource_name = "NotSoDeadState"
 script/source = "extends Node
 @onready var d:Doctor = $\"../..\"
 
-
+var tween:Tween
 func start():
 	d.set_collision_layer_value(1,false)
 	d.set_collision_mask_value(1,false)
 	d.z_index=5
-	d.spri.texture=d.DOCTOR_RIP
+	
 	if(d.weapon!=null):
 		d.weapon.visible=false
 	d.isDead=true
+	d.isChasing=false
+	d.isAttacking=false
+	d.isControlled=false
+	d.isStunned=false
+	d.modulate=Color.WHITE
+	d.unstunned()
 	d.velocity=Vector2.ZERO
-	pass
+	d.v=4
+	
+	if(d.isInfected):
+		tween = get_tree().create_tween()
+		tween.tween_property(d,\"modulate\",Color.DARK_GRAY,3)
 	
 func update(delta:float):
 	d.velocity=lerp(d.velocity,Vector2.ZERO,0.5)
@@ -141,19 +399,55 @@ func update(delta:float):
 	
 	
 func stop():
+	
 	d.set_collision_layer_value(1,true)
 	d.set_collision_mask_value(1,true)
 	d.z_index=10
 	d.isDead=false
 	if(d.weapon!=null):
 		d.weapon.visible=true
-	d.spri.texture=d.DOCTOR_BOTTOM_LEFT
 	pass
 "
 
 [sub_resource type="GDScript" id="GDScript_8truy"]
 resource_name = "AttackState"
 script/source = "extends Node
+@onready var d:Doctor = $\"../..\"
+@export var attackDirection:float=0.
+var endPos:Vector2=Vector2(35,0)
+
+func start():
+	d.velocity=Vector2.ZERO
+	d.relative_pos.rotation=(d.lookingDirection)
+	d.not_relative_rotation.rotation=(-d.lookingDirection)
+	d.anim.play(\"attack\")
+	
+	
+func update(delta:float):
+	
+	pass
+	
+func stop():
+	d.isAttacking=false
+	
+	d.relative_pos.rotation=0
+	d.not_relative_rotation.rotation=0
+	d.relative_pos.position=Vector2.ZERO
+	d.not_relative_rotation.position=Vector2.ZERO
+	d.hands.position=Vector2.ZERO
+	d.anim.stop()
+	pass
+
+"
+
+[sub_resource type="GDScript" id="GDScript_51wnl"]
+resource_name = "hands"
+script/source = "extends Node2D
+@onready var doctor:Doctor = $\"../..\"
+
+func _process(delta):
+	if(!doctor.isAttacking):
+		rotation=doctor.lookingDirection
 "
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_43oag"]
@@ -164,42 +458,35 @@ height = 50.0
 z_index = 10
 motion_mode = 1
 script = ExtResource("1_7spot")
-
-[node name="HealthComponent" parent="." instance=ExtResource("2_tp7vr")]
-offset_top = -56.0
-offset_bottom = -56.0
+lookingDirection = 0.1
+dec = 1000.0
 
 [node name="Feet" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_1y7de")
-
-[node name="RotationPoint" type="Node2D" parent="."]
-position = Vector2(0, -10)
-
-[node name="Hands" type="Node2D" parent="."]
-position = Vector2(0, -10)
-script = SubResource("GDScript_51wnl")
-
-[node name="LineDebug" type="Line2D" parent="Hands"]
-visible = false
-position = Vector2(23, 0)
-points = PackedVector2Array(-1, 0, 32, 0)
-width = 2.0
-default_color = Color(0, 0, 0, 1)
-
-[node name="Sprite" type="Sprite2D" parent="."]
-position = Vector2(0, -10)
-texture = ExtResource("3_phuj4")
-
-[node name="SpriteDebug" type="Sprite2D" parent="."]
-visible = false
-texture = ExtResource("2_ijo4o")
+metadata/_edit_lock_ = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_18utq")
+}
+autoplay = "moving"
+
+[node name="WillHit" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = SubResource("GDScript_w5wfg")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WillHit"]
+shape = SubResource("CircleShape2D_6gewq")
 
 [node name="States" type="Node" parent="."]
 
 [node name="Idle" type="Node" parent="States"]
 script = SubResource("GDScript_p1dh3")
+
+[node name="Stunned" type="Node" parent="States"]
+script = SubResource("GDScript_776x7")
 
 [node name="Chase" type="Node" parent="States"]
 script = SubResource("GDScript_r1q3r")
@@ -213,21 +500,14 @@ script = SubResource("GDScript_bdqnq")
 [node name="Attack" type="Node" parent="States"]
 script = SubResource("GDScript_8truy")
 
-[node name="HitBox" type="Area2D" parent="."]
-position = Vector2(0, -10)
-collision_layer = 4
-collision_mask = 0
-
-[node name="Body" type="CollisionShape2D" parent="HitBox"]
-position = Vector2(0, -1)
-shape = SubResource("CapsuleShape2D_43oag")
-
 [node name="StunTimer" type="Timer" parent="."]
-one_shot = true
+wait_time = 0.1
+autostart = true
 
 [node name="AI" type="Node2D" parent="."]
 script = ExtResource("5_8nqo0")
 minRange = 50
+metadata/_edit_lock_ = true
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="AI"]
 path_max_distance = 200.0
@@ -238,5 +518,86 @@ time_horizon_agents = 0.5
 avoidance_layers = 7
 avoidance_mask = 7
 
+[node name="RelativePos" type="Node2D" parent="."]
+metadata/_edit_lock_ = true
+
+[node name="Hands" type="Node2D" parent="RelativePos"]
+position = Vector2(-12.3617, 0)
+rotation = 1.45037
+script = SubResource("GDScript_51wnl")
+metadata/_edit_lock_ = true
+
+[node name="LineDebug" type="Line2D" parent="RelativePos/Hands"]
+visible = false
+position = Vector2(23, 0)
+points = PackedVector2Array(-1, 0, 32, 0)
+width = 2.0
+default_color = Color(0, 0, 0, 1)
+metadata/_edit_lock_ = true
+
+[node name="RotationPoint" type="Node2D" parent="RelativePos"]
+metadata/_edit_lock_ = true
+
+[node name="NotRelativeRotation" type="Node2D" parent="RelativePos"]
+metadata/_edit_lock_ = true
+
+[node name="Sprite" type="Sprite2D" parent="RelativePos/NotRelativeRotation"]
+position = Vector2(0, -10)
+texture = ExtResource("3_btgxa")
+hframes = 2
+vframes = 5
+metadata/_edit_lock_ = true
+
+[node name="SpriteDebug" type="Sprite2D" parent="RelativePos/NotRelativeRotation"]
+visible = false
+texture = ExtResource("2_ijo4o")
+metadata/_edit_lock_ = true
+
+[node name="HitBox" type="Area2D" parent="RelativePos/NotRelativeRotation"]
+position = Vector2(0, -13)
+collision_layer = 4
+collision_mask = 0
+
+[node name="Body" type="CollisionShape2D" parent="RelativePos/NotRelativeRotation/HitBox"]
+shape = SubResource("CapsuleShape2D_43oag")
+metadata/_edit_lock_ = true
+
+[node name="debug" type="Label" parent="RelativePos/NotRelativeRotation"]
+visible = false
+offset_left = -21.0
+offset_top = -86.0
+offset_right = 24.0
+offset_bottom = -63.0
+text = "State"
+metadata/_edit_lock_ = true
+
+[node name="HealthComponent" type="Control" parent="RelativePos/NotRelativeRotation" node_paths=PackedStringArray("parent")]
+layout_mode = 3
+anchors_preset = 0
+offset_top = -56.0
+offset_bottom = -56.0
+script = ExtResource("5_1r6du")
+parent = NodePath("../../..")
+
+[node name="HPbar" type="TextureProgressBar" parent="RelativePos/NotRelativeRotation/HealthComponent"]
+z_index = 20
+z_as_relative = false
+layout_mode = 0
+offset_left = -32.0
+offset_top = -16.0
+offset_right = 32.0
+offset_bottom = 16.0
+max_value = 64.0
+page = 2.0
+value = 10.0
+texture_over = ExtResource("5_vqh76")
+texture_progress = ExtResource("6_f607k")
+
+[node name="Timer" type="Timer" parent="RelativePos/NotRelativeRotation/HealthComponent"]
+wait_time = 0.1
+one_shot = true
+
+[connection signal="area_entered" from="WillHit" to="WillHit" method="_on_area_entered"]
 [connection signal="timeout" from="StunTimer" to="." method="unstunned"]
 [connection signal="velocity_computed" from="AI/NavigationAgent2D" to="States/Chase" method="velocityComputed"]
+[connection signal="timeout" from="RelativePos/NotRelativeRotation/HealthComponent/Timer" to="RelativePos/NotRelativeRotation/HealthComponent" method="healTimer"]

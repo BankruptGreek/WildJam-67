@@ -1,14 +1,14 @@
 [gd_scene load_steps=5 format=3 uid="uid://cv7533nl1nb4g"]
 
 [ext_resource type="Script" path="res://Weapon/club.gd" id="1_1p6j0"]
-[ext_resource type="Texture2D" uid="uid://djjr7p8h5qs8i" path="res://Weapon/clubGround.tres" id="2_er604"]
+[ext_resource type="Texture2D" uid="uid://k8dx5skl3biq" path="res://Weapon/clubGround.tres" id="2_er604"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_xuxwd"]
 radius = 29.0172
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_3ysvp"]
 radius = 3.0
-height = 42.0
+height = 44.0
 
 [node name="Club" type="Node2D"]
 z_index = 9
@@ -20,6 +20,7 @@ texture = ExtResource("2_er604")
 metadata/_edit_lock_ = true
 
 [node name="PickUpRange" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 2
 
@@ -33,7 +34,7 @@ collision_layer = 0
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
-position = Vector2(38, 0)
+position = Vector2(27, 0)
 rotation = 1.5708
 shape = SubResource("CapsuleShape2D_3ysvp")
 

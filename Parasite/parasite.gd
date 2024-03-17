@@ -7,6 +7,7 @@ class_name Parasite
 @onready var spriDebug = $SpriteDebug
 @onready var anim = $AnimationPlayer
 @export var camera:Camera2D
+@export var pointLight:PointLight2D
 
 @onready var agro_range:Area2D = $AgroRange
 @onready var attach_range:Area2D = $AttachRange
@@ -15,9 +16,12 @@ class_name Parasite
 
 @export_group("Parasite")
 @export var orbitSize:int = 16
-@export var	orbitOffset:Vector2=Vector2.ZERO
+@export var orbitOffset:Vector2=Vector2.ZERO
 var attaching:bool=false
 var controlledBody:CharacterBody2D
+@onready var health:HealthBar = $HealthComponent
+
+
 
 @export_group("Movement")
 @export var lookingDirection:float=0
@@ -40,6 +44,8 @@ func _ready():
 	currentState.start()
 
 func _process(delta):
+	if(isDead):
+		return
 	match currentState:
 		ground:
 			currentState.update(delta)
@@ -65,23 +71,18 @@ var ignoreBody:Node2D=null
 func attach_to(body):
 	var temp=body
 	if(!body.is_class("Area2D")): return
-	body=body.get_parent()
+	body=body.get_parent().get_parent().get_parent()
 	if(body==null): return
-	print("body detected = " + str(body))
+	#print("body detected = " + str(body))
 	if(!attaching || body==ignoreBody || !body.has_method("attached")):
-		if(!attaching):
-			print("Not Attaching atm")
-		elif(body==ignoreBody):
-			print("Ignoring this one atm")
-		elif(!body.has_method("attached")):
-			print("Not suitable for me")
 		return
 	
 	if(body.attached(self)):
+		controlledBody=body
 		currentState.stop()
 		currentState=attached
-		attached.start(body)
-		print(str(temp))
+		attached.start()
+		#print(str(temp))
 	
 	
 	pass # Replace with function body.
@@ -94,5 +95,36 @@ func clearIgnoreBody():
 	pass # Replace with function body.
 
 
+func getHit(source:Node2D,pushForce:float,damage:int):
+	if(currentState==attached):
+		controlledBody.detached()
+		currentState.stop()
+		currentState=ground
+		currentState.start()
+	velocity+=pushForce*source.global_position.direction_to(global_position)
+		
 
 
+
+
+func _on_agro_range_area_entered(area):
+	var body:Node2D = area.get_parent().get_parent().get_parent()
+	if(body == null):
+		return
+	if(body.has_method("trigger")):
+		body.trigger(self)
+	
+	pass # Replace with function body.
+	
+var isDead:bool=false
+
+func die():
+	isDead=true
+	modulate=Color(1,1,1,0)
+	var tween:Tween
+	tween = get_tree().create_tween()
+	tween.tween_property(pointLight,"color",Color(1,1,1,0.2),1.5)
+	get_parent().restart()
+	print("GameOver")
+	pass
+	
